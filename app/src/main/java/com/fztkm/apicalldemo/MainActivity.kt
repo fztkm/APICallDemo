@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import com.fztkm.apicalldemo.databinding.ActivityMainBinding
 import com.fztkm.apicalldemo.databinding.DialogCustomProgressBinding
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -93,6 +94,16 @@ class MainActivity : AppCompatActivity() {
             result?.let {
                 Log.i("JSON RESPONSE RESULT", it)
             }
+
+            val jsonObject = JSONObject(result)
+            val message = jsonObject.optString("message")
+            Log.i("User message", message)
+            val userId = jsonObject.optInt("user")
+            Log.i("User ID", userId.toString())
+            val name = jsonObject.optString("name")
+            Log.i("User name", name)
+            val email = jsonObject.optString("email")
+            Log.i("User emil", email)
         }
 
         private fun showProgressDialog(){
