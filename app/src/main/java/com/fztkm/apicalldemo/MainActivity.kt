@@ -9,6 +9,7 @@ import com.fztkm.apicalldemo.databinding.ActivityMainBinding
 import com.fztkm.apicalldemo.databinding.DialogCustomProgressBinding
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.Exception
@@ -29,10 +30,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        CallAPILoginAsyncTask().execute()
+        CallAPILoginAsyncTask("Taro",12345).execute()
     }
 
-    private inner class CallAPILoginAsyncTask(): AsyncTask<Any, Void, String>(){
+    private inner class CallAPILoginAsyncTask(val name: String, val password: Int): AsyncTask<Any, Void, String>(){
 
         private lateinit var customProgressDialog: Dialog
 
@@ -51,7 +52,22 @@ class MainActivity : AppCompatActivity() {
                 connection = (url.openConnection() as HttpURLConnection).apply {
                     doInput = true
                     doOutput = true
+                    instanceFollowRedirects = false
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("charset", "utf-8")
+                    setRequestProperty("Accept", "application/json")
+                    useCaches = false
                 }
+                val writeDataOutputStream = DataOutputStream(connection.outputStream)
+                val jsonRequest = JSONObject()
+                jsonRequest.put("username", name)
+                jsonRequest.put("password", password)
+
+                writeDataOutputStream.writeBytes(jsonRequest.toString())
+                writeDataOutputStream.flush()
+                writeDataOutputStream.close()
+
                 val httpResult: Int = connection.responseCode
 
                 if(httpResult == HttpURLConnection.HTTP_OK){
